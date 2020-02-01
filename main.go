@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"os"
@@ -18,14 +19,20 @@ func main() {
 	}
 	log.Printf("using port '%s'\n", port)
 
-	galaxy := domain.Galaxy{}
+	galaxy := domain.NewGalaxy()
 	log.Printf("creating galaxy with %d stars in %d universes\n", len(galaxy.GetStars()), len(galaxy.GetUniverses()))
 
-	infoUsecase := usecases.InfoUsecase{Galaxy: &galaxy}
+	infoUsecase := usecases.InfoUsecase{Galaxy: galaxy}
+	universeUsecase := usecases.UniverseUsecase{Galaxy: galaxy}
 
 	infoController := web.InfoController{InfoUsecase: infoUsecase}
+	universeController := web.UniverseController{UniverseUsecase: universeUsecase}
 
-	mux := http.NewServeMux()
+	mux := mux.NewRouter()
+	mux.HandleFunc("/api/universes", universeController.GetUniverses).Methods("GET")
+	mux.HandleFunc("/api/universes", universeController.AddUniverse).Methods("POST")
+	mux.HandleFunc("/api/universes/{id}", universeController.GetUniverse).Methods("GET")
+	mux.HandleFunc("/api/universes/{id}", universeController.RemoveUniverse).Methods("DELETE")
 	mux.HandleFunc("/api/colors/values", infoController.ServeColorValues)
 
 	log.Printf("starting webserver on port %s ...", port)

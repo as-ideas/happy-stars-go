@@ -12,7 +12,7 @@ import (
 
 func TestInfoController_ServeColorValues(t *testing.T) {
 
-	controller := InfoController{InfoUsecase: usecases.InfoUsecase{Galaxy: &domain.Galaxy{}}}
+	controller := InfoController{InfoUsecase: usecases.InfoUsecase{Galaxy: domain.NewGalaxy()}}
 
 	req := httptest.NewRequest("GET", "/", nil)
 	w := httptest.NewRecorder()
