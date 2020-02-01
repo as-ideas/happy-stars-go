@@ -16,7 +16,6 @@ type UniverseController struct {
 }
 
 func (c *UniverseController) AddUniverse(w http.ResponseWriter, r *http.Request) {
-	var newUniverse domain.Universe
 	body, err := ioutil.ReadAll(r.Body)
 	defer r.Body.Close()
 
@@ -25,13 +24,19 @@ func (c *UniverseController) AddUniverse(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	var newUniverse domain.Universe
 	err = json.Unmarshal(body, &newUniverse)
 	if err != nil {
-		http.Error(w, "failed adding universe: "+err.Error(), http.StatusBadRequest)
+		http.Error(w, "failed adding universe: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	err = c.UniverseUsecase.AddUniverse(newUniverse)
+
+	if err != nil && errors.Is(err, domain.ErrInvalidUniverse) {
+		http.Error(w, "failed adding universe: "+err.Error(), http.StatusBadRequest)
+		return
+	}
 	if err != nil && errors.Is(err, domain.ErrAlreadyExists) {
 		http.Error(w, "failed adding universe: "+err.Error(), http.StatusConflict)
 		return

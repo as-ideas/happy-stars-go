@@ -1,18 +1,18 @@
-package web
+package web_test
 
 import (
 	"encoding/json"
-	"github.com/as-ideas/happy-stars-go/domain"
-	"github.com/as-ideas/happy-stars-go/usecases"
+	"github.com/as-ideas/happy-stars-go/test"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
-func TestInfoController_ServeColorValues(t *testing.T) {
+func Test_InfoController_ServeColorValues(t *testing.T) {
 
-	controller := InfoController{InfoUsecase: usecases.InfoUsecase{Galaxy: domain.NewGalaxy()}}
+	galaxy := test.GivenEmptyGalaxy()
+	controller := test.GivenInfoController(galaxy)
 
 	req := httptest.NewRequest("GET", "/", nil)
 	w := httptest.NewRecorder()

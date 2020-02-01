@@ -1,7 +1,6 @@
 package usecases
 
 import (
-	"errors"
 	"fmt"
 	"github.com/as-ideas/happy-stars-go/domain"
 	"log"
@@ -13,8 +12,8 @@ type UniverseUsecase struct {
 
 func (u *UniverseUsecase) AddUniverse(newUniverse domain.Universe) error {
 
-	if !newUniverse.IsValid() {
-		return errors.New("invalid newUniverse given")
+	if err := newUniverse.Validate(); err != nil {
+		return err
 	}
 
 	err := u.Galaxy.AddUniverse(newUniverse)
